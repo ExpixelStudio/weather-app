@@ -6,7 +6,13 @@ const fetchData = async () => {
     )
     const data = await response.json();
         
-    const getInfo = () => {
+    return data;
+}
+
+const getInfo = async () => {
+
+    const data = await fetchData();
+
     const info = {
         condition : `${data.current.condition.text}`,
         location : `${data.location.country}`,
@@ -22,12 +28,13 @@ const fetchData = async () => {
     console.log(info);
     return info;
 }
-return getInfo;
-}
-
 
 const get = fetchData();
 console.log(get);
+
+getInfo().then((info) => {
+    console.log(info.condition);
+});
 
 /* const fetchData = () => {
     fetch(`http://api.weatherapi.com/v1/current.json?key=${key}&q=Barbados&aqi=no` ,

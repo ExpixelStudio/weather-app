@@ -12,13 +12,15 @@ const fetchCurrentData = async () => {
 }
 
 const fetchForecastData = async (location) => {
-    const response = await fetch (`http://api.weatherapi.com/v1/forecast.json?key=${key}&q=Barbados&days=3&aqi=no&alerts=no` ,
-    {mode:'cors'}
-    );
-
-    const data = await response.json();
-
-    return data;
+    
+    const response = await fetch (`http://api.weatherapi.com/v1/forecast.json?key=${key}&q=${location}&days=3&aqi=no&alerts=no` ,
+        {mode:'cors'}
+        );
+    
+        const data = await response.json();
+        /* console.log({data}); */
+        return data;
+   
 }
 
 const fetchSearchData = async (location) => {
@@ -28,42 +30,65 @@ const fetchSearchData = async (location) => {
     );
 
     const data = await response.json();
-    console.log(data);
+    /* console.log(data); */
     return data;
 }
 
-/* async function getSearchQuery() { */
+
     
-    form.addEventListener('submit' , (e) => {
+    form.addEventListener('submit' , async (e) => {
         e.preventDefault();
-        new FormData(form); //FormData is an inbuilt prototype
+        /* new FormData(form); */ //FormData is an inbuilt prototype
 
         let fd = new FormData(form); //fd formdata
 
         const obj = Object.fromEntries(fd); //returns js object from data passed in
         const json = JSON.stringify(obj);
 
+        fetchForecastData(json);
         fetchSearchData(search.value);
-        console.log(search.value);
-        console.log(obj);
+
+        console.log(json);
+
+        getCurrentInfo(json);
+        const forecastInfo = await getForecastInfo(json);
+        
+        const forecastDay = forecastInfo(1);
+        console.log(forecastDay);
+        
+       
+
     })
 
 
 
 
-const getForecastInfo = async () => {
+const getForecastInfo = async (location) => {
 
-    const data = await fetchForecastData();
-    return console.log(data);
-    
-    const info = {
+    const data = await fetchForecastData(location);
+
+   
+        const forecastDay = (i) => {
+
+            const info = {
+            date : `${data.forecast.forecastday[i].date}`,
+            avgTemp_cel : `${data.forecast.forecastday[i].day.avgtemp_c}`,
+            avgTemp_fah : `${data.forecast.forecastday[i].day.avgtemp_f}`,
+            condition : `${data.forecast.forecastday[i].day.condition.text}`,
+            }
+
+            console.log(info);
+            return info;
+        };
+
+        return forecastDay;
         
-    }
+    //}
 }
 
-const getCurrentInfo = async () => {
+const getCurrentInfo = async (location) => {
 
-    const data = await fetchCurrentData();
+    const data = await fetchForecastData(location);
 
     const info = {
         condition : `${data.current.condition.text}`,
@@ -81,13 +106,15 @@ const getCurrentInfo = async () => {
     return info;
 }
 
-fetchCurrentData();
 
-getForecastInfo();
 
-getCurrentInfo().then((info) => {
-    /* console.log(info.condition); */
-});
+fetchForecastData('Barbados');
+
+/* getForecastInfo(); */
+
+/* getCurrentInfo().then((info) => {
+    
+}); */
 
 /* const fetchData = () => {
     fetch(`http://api.weatherapi.com/v1/current.json?key=${key}&q=Barbados&aqi=no` ,

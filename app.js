@@ -56,7 +56,7 @@ const fetchSearchData = async (location) => {
         const forecastDay = forecastInfo(1);
         console.log(forecastDay);
         
-       
+        render(json);
 
     })
 
@@ -78,6 +78,7 @@ const getForecastInfo = async (location) => {
             }
 
             console.log(info);
+            console.log({data});
             return info;
         };
 
@@ -92,22 +93,50 @@ const getCurrentInfo = async (location) => {
 
     const info = {
         condition : `${data.current.condition.text}`,
-        location : `${data.location.country}`,
+        country : `${data.location.country}`,
         time : `${data.location.localtime}`,
-        temp_cel : `${data.current.temp_c}`,
-        temp_fah : `${data.current.temp_f}`,
-        feels_cel : `${data.current.feelslike_c}`,
-        feels_fah : `${data.current.feelslike_f}`,
+        tempC : `${data.current.temp_c}`,
+        tempF: `${data.current.temp_f}`,
+        feelsC : `${data.current.feelslike_c}`,
+        feelsF : `${data.current.feelslike_f}`,
         wind_speed : `${data.current.gust_kph}`,
         humidity : `${data.current.humidity}`,
     };
-    console.log({data});
+    /* console.log({data}); */
     console.log({info});
     return info;
 }
 
+ async function render(location){
+
+    const main = document.getElementById('main');
+   
+    const currentInfo = await getCurrentInfo(location);
+    const forecastInfo = await getForecastInfo(location);
+    const forecastDay = forecastInfo(0);
+
+    const { condition, country, time, tempC, tempF, feelsC, feelsF, wind_speed, humidity } = currentInfo;
+
+    const html = `
+        <div class="current">
+            <p>Condition: ${condition}</p>
+            <p>Location: ${country}</p>
+            <p>Time: ${time}</p>
+            <p>Temp C: ${tempC}</p>
+            <p>Temp F: ${tempF}</p>
+            <p>Feels C: ${feelsC}</p>
+            <p>Feels F: ${feelsF}</p>
+            <p>Wind: ${wind_speed}</p>
+            <p>Humidity: ${humidity}</p>
+        </div>
+    `;
+
+    main.innerHTML = html;
+   
+};
 
 
+render('Barbados');
 fetchForecastData('Barbados');
 
 /* getForecastInfo(); */
